@@ -3,11 +3,14 @@ services:
 script:
 - export SAVE=$PWD cnt="ubumcrctr"
 - docker build -t ${cnt} .
-- ./docker-slim build --continue-after probe --http-probe --cmd "--config file:${PWD}/mcrouter.json -p 5000"  ${cnt}
+- ./docker-slim build --continue-after probe --http-probe --cmd "--config file:${PWD}/mcrouter.json
+  -p 5000"  ${cnt}
 before_deploy:
 - cd
-- wget `curl -s https://api.github.com/repos/appc/docker2aci/releases | grep browser_download_url  | head -n 1 | cut -d '"' -f 4` -O d2a.tar.gz
-- tar -zxf d2a.tar.gz && rm d2a.tar.gz && d2a=`ls | grep "docker2aci*"` && d2a=`basename  $d2a`  && alias d2a='${PWD}/${d2a}/docker2aci'
+- wget `curl -s https://api.github.com/repos/appc/docker2aci/releases | grep browser_download_url  |
+  head -n 1 | cut -d '"' -f 4` -O d2a.tar.gz
+- tar -zxf d2a.tar.gz && rm d2a.tar.gz && d2a=`ls | grep "docker2aci*"` && d2a=`basename  $d2a`  &&
+  alias d2a='${PWD}/${d2a}/docker2aci'
 - docker save -o ${cnt}.slim.tar ${cnt}.slim
 - "${PWD}/${d2a}/docker2aci ${cnt}.slim.tar"
 - xz -9 -c ${cnt}.slim.tar > ${cnt}.slim.tar.xz
@@ -16,8 +19,13 @@ deploy:
   api_key:
     secure: jaLfQhoXWWb2bkVzKxUoVfQl12XCn8c7zCppttonmwS6QoI7FlBfFvQ0x3ZvMXdfQJiqsOC/I+FXQxO6+0QuQVhRTN8IAQavaRZ7IXlbg3x6A8wro89eBAIvxvHMBsuVWibWlN5ULUIPtmXvrIyANzZ66VkWknrUXT5iNeMKmbVlKU907GaUdbK1Qa3bDUrkFLOa95I9EwSzpchEpnQ3NuvrOxLyiFFRxbNMfvIxBDh0hIAnofuzoyNnAB1EEWCdNC3zCcCv8ZavyyPg6ayFviSjFP6JpISbgt6WbBBTru+o1xPW64lcxZc4zG8bRIoiAlVYBNWa/zZcmzJBE73A/kcbQxpp2JYjn+1mm1XD9hQTTbFnDbvYuahqoPmX/+AZSsdvqlu52bxOajD98WQVJQ/MW138p59KHArOeEr0DUpPEI529ZXpBlwOpG4eLGdA8ELeFwammcBbCfLfTR4Aa9QF0Yjw3I1q57aUxCNP0K/ymzkEzLYDNZt2kQdeb15+/GKHbNGWERQzOmL46/rUqs2e3UVlwMJBRKiSbe+3PbroUxkxn3bOjOGMCpVZNBq1Lm2+h0AxCQdmiwPuOjjStS29WNq/IV67BfSuKgF9H720BfvhWqGUc3RJaGEkMTjKH5AKLHcc9slV9Ayot7ySO5PFVycWtchADZGkVl9N0cU=
   file:
-  - ${cnt}.slim.tar.xz 
-  - ${cnt}.slim-latest.aci 
+  - "${cnt}.slim.tar.xz"
+  - "${cnt}.slim-latest.aci"
   skip_cleanup: true
   on:
     tags: true
+env:
+  global:
+  - secure: DhY/Iy7l93Qvnmh8dJranfUhcAm888GiDuMs7hgzqiRZx7IurbhWUO3F97xYUuD7PU9iunKMnE+ZcQdB/VpRA6V1EvRbnF6EyoSqUhzMpEbLEzn0J9MpbAYzrU0jgJkzoQ/yhrv3QtJV/vo4z2Up3upgCjUvHBppAkSLdCzaeilk6ClKCsqAqB4iufpCOd8gnUR9sokndniQNa+ri044jvpucfjTLpjw8XbJMNMe579DzEjHN5cHb9mEwTeNVBxHXVqd8Rmh4AjZhYE+UpPQmWOb7UVVr3z8u5vnFxP/kbYzEYy32aHV6Q1yNNkUcpj9Rn14E1ryr6jIRX+gZHIzwXEeE1jyuCkXTQHnlTzmMXxetCl4TnrQk5T2zzC9OQIYeBtHNSlM8D5slsfz34dy+wsxceToE35QR+5x8XPfFSlrXkRiABEVBzwm9toWHaXqd5k6qMNybDM+i589vOb6BbOwvOiDYwRiZ3n58RDrDqghLHyMCzmxL6BYjZoS5yxWOANoPaJO4S53zeqvA6wpBmhxmuIUmu/UJoDjW9ZzzLrTfrEv59f2+sQ4dq/Lz2vw3AU3Yww7Z9SP4bFyKHfDKVUQLzmk67027sOV1FFWDMfd/etwBUdBIxvOjNE+4qAFmaF+Och3baa8wztRfCsLXrjKISihFnhTrzN1+E+YP9s=
+  - secure: nILTCHX2lvK6S6C9tBwzVoMHOOC6ERjCimAoa+1hQXzpStrlQQQXztoGds3ZSB+hdBxAT55pBAxkbPkDaGE0xTgtSHjkR+8Kin0LaEi++UW3JGrwYOlbxWG2sokKiohw7o582eQkWl3ie8u3YL5YM2zcT8scHDNaBoT+dJgWRj4bBXllxHzCoU7B0BiqOMyh9JhAQrnWbu5C0d3kdf707Q1oFc9IdgSAQ8pzoHEuk9zhPkU6is6I/a2RON/pQ86/8T4CfSbPT91Z+vZRwQK0eWAA1SStXpnGIC84rEJEMxePT2Lz/m5NqyUvQbnOXO+t1D/sT4W9p7+wCuuVGcjz+PcLvJikzWg5MagxIA7JKavJuhFN6UsFQw5BD5fny8LUNqUmTpDcLWyieYrnNo9DNOWpMNtA99EDEJzCX5p7F03YM96KokJCHzFmk46pKpqyo3G1aAIn/RNHs4U192HUwRRoKeIFtUBz6XJLoeramMhLIIXIkLJWcJ2RiRbQsWRTO+it5X0emCXmgjhr4Gp0CJcHmKNG4LBctr9HNjoS5AfP71vl5DXutPhgOgqRYT08ndxVkpAK7NJo6YM4+jIip8ETMFZW197fM7yTwYoHEOxkcwdLNpuTe73zOJ62FPC5sB8zcagBgJX/5ZyPiQfED0wm4SclseLEFoeKXxkjh74=
+  - secure: t2FLQk5pyqs6qYNEr153Q/wj4+Ov5uQU6NGR9pNK9wZbSUFc77zbKIEpnvhumR8QOF0KrbpdzwMT4wAgc82tVtyQO8nt/3Tj8+yPQsnZXENexr6POulCUBWwjQhpAm2uT5ZhcD3Aqeumn4AovPu2hZ1V8vBIN2/JG0TxYyh8Enm2Nok4FZBlMDocOKPnmfdNggGS+whX9GypIeBBY6lJcLyAXyY0xKj4YD75YexJyssbnD/iROM0NRxZJxbN7eFJPIU6sQvNQulN2mOUrI1MHdhzjYn+pv4wigNTdbr3kRdJyFPql4kJaXTEDWY34y4l+fKnLToEYElgBGs8bHL/AbrHI+Tj3BAaLdIZchDQHsGuzg+hYpwT/hhl8vipmFLhjQYyfxXaNiN/+PfKmzRk6il8so+X0izlqPbolTYbGcIcSqkQ2z8myr0Ej0tif9EoNqa9DdoO0KOl7zjm+QERf9DbeMZ0jCa46tKMlbWt4cbms+w/CSesFJEHlkRponz2DPqmtxZmc+Mg1hmXnJ9LsverYx+CzIig7Ad2av/tyoiY/fCsrxx8705vnW5Rtv5SiL7qVcRhLP0oGTFjripXMxcFRRapbRKvGXSDC1ULHI+sw6PE7qGsGKwLuI7zxNXqVwE6+lgvlaipnX4nB76m+GvGUS7JaYSEzp67ewGDDGg=
